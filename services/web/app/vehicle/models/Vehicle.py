@@ -15,7 +15,7 @@ class Vehicle(db.Model):
   trip_schedule_relationship = db.Column(db.String(50), nullable=False)
   trip_start_date = db.Column(db.String(50), nullable=False)
   trip_route_id = db.Column(db.Integer())
-  trip_id = db.Column(db.Integer(),  db.ForeignKey('Alcaldia.id'), nullable=False)
+  trip_id = db.Column(db.Integer(), db.ForeignKey('Alcaldia.id'), nullable=False)
   alcaldia_id = db.Column(db.Integer())
   created_at  = db.Column(db.TIMESTAMP, default=func.current_timestamp())
   updated_at = db.Column(db.TIMESTAMP, default=func.current_timestamp(), onupdate=func.current_timestamp())
@@ -26,8 +26,6 @@ class Vehicle(db.Model):
   def serialize(self):
       return {
           'id': self.id, 
-          'email': self.email,
-          
           'created_at': str(self.created_at),
           'updated_at': str(self.updated_at)
       }

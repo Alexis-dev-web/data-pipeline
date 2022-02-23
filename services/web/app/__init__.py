@@ -39,9 +39,9 @@ def hello_world():
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
-    print("Closing session on request end")
+    print("closing session on request end")
     db.session.remove()
 
-# from app.routes import create_routes
+from app.routes import create_routes
 
-# create_routes(api)
+create_routes(api)
