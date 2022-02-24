@@ -19,3 +19,6 @@ class AlcaldiaRepository:
   def update(self, alcaldia) -> Alcaldia:
     db.session.commit()
     return alcaldia
+
+  def get_by_name(self, name):
+    return Alcaldia.query.filter_by(name=name).first()
