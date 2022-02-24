@@ -1,6 +1,5 @@
 from sqlalchemy import func
 from app import db
-import uuid
 
 
 class Alcaldia(db.Model):
@@ -8,6 +7,7 @@ class Alcaldia(db.Model):
 
   id = db.Column(db.Integer(), primary_key=True)
   name = db.Column(db.String(255), nullable=False)
+  geo_point = db.Column(db.String(255), nullable=False)
   created_at  = db.Column(db.TIMESTAMP, default=func.current_timestamp())
   updated_at = db.Column(db.TIMESTAMP, default=func.current_timestamp(), onupdate=func.current_timestamp())
 
@@ -18,6 +18,7 @@ class Alcaldia(db.Model):
       return {
           'id': self.id, 
           'name': self.name,
+          'geo_point': self.geo_point,
           'created_at': str(self.created_at),
           'updated_at': str(self.updated_at)
       }
