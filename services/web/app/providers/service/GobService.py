@@ -48,7 +48,7 @@ class GobService:
     """
       Function to get vehicles from api https://datos.cdmx.gob.mx/
     """
-    url = f'{self.URL_GOB}?resource_id=ad360a0e-b42f-482c-af12-1fd72140032e&limit=20'
+    url = f'{self.URL_GOB}?resource_id=ad360a0e-b42f-482c-af12-1fd72140032e&limit=209'
 
     try:
       response = requests.get(url)
