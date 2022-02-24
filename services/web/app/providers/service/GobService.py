@@ -9,12 +9,15 @@ from app.alcaldia.models.AlcaldiaRepository import Alcaldia, AlcaldiaRepository
 from app.vehicle.models.VehicleRepository import Vehicle, VehicleRepository
 
 
+
 class GobService:
 
   def __init__(self):
     self.alcaldiaRepository = AlcaldiaRepository()
     self.vehicleRepository = VehicleRepository()
     self.URL_GOB = os.environ.get("URL_GOB")
+    self.URL_GEO = os.environ.get("URL_GEO")
+    self.GEO_KEY = os.environ.get("GEO_KEY")
 
   def get_alcaldias_from_api_gob(self):
     """
@@ -36,7 +39,7 @@ class GobService:
 
   def create_alcaldia_from_api(self, data):
     alcaldia = Alcaldia(data['_id'])
-    alcaldia.name = data['nomgeo']
+    alcaldia.name = self.get_alcaldia_in_localization(data['geo_point_2d'])
     alcaldia.geo_point = data['geo_point_2d']
 
     return self.alcaldiaRepository.save(alcaldia)
@@ -45,10 +48,9 @@ class GobService:
     """
       Function to get vehicles from api https://datos.cdmx.gob.mx/
     """
-    url = f'{self.URL_GOB}?resource_id=ad360a0e-b42f-482c-af12-1fd72140032e'
+    url = f'{self.URL_GOB}?resource_id=ad360a0e-b42f-482c-af12-1fd72140032e&limit=20'
 
     try:
-      alcaldias = self.get_alcaldias_from_api_gob()
       response = requests.get(url)
 
       data = json.loads(response.content)
@@ -62,18 +64,23 @@ class GobService:
 
   def create_vehicle_from_api(self, data):
     vehicle = Vehicle(data['_id'])
-    vehicle.geographic_point = data['geographic_point']
     vehicle.vehicle_current_status = data['vehicle_current_status']
     vehicle.trip_start_date = data['trip_start_date']
     vehicle.trip_route_id = data['trip_route_id']
     vehicle.trip_schedule_relationship = data['trip_schedule_relationship']
     vehicle.trip_id = data['trip_id']
     vehicle.position_speed = data['position_speed']
-    vehicle.vehicle_label = data['vehocle_label']
+    vehicle.vehicle_label = data['vehicle_label']
     vehicle.vehicle_id = data['vehicle_id']
     vehicle.updated_at = data['date_updated']
+    
+    localization = self.get_alcaldia_in_localization(data['geographic_point'])
+    alcaldia = self.alcaldiaRepository.get_by_name(localization)
 
-    return vehicle
+    vehicle.geographic_point = data['geographic_point']
+    vehicle.alcaldia_id = alcaldia.id if alcaldia else None
+
+    return self.vehicleRepository.save(vehicle)
 
   def attach_save_vehicles_from_background(self):
     """
@@ -89,3 +96,21 @@ class GobService:
 
     return alcaldias
 
+  def get_vehicle_and_alcaldias(self):
+    alcaldias = self.get_alcaldias_from_api_gob()
+
+    return self.get_vehicles_from_api_gob()
+
+  def get_alcaldia_in_localization(self, geo_point):
+    """
+      Get the alcaldia that corresponds to geographic point
+    """
+    url = f"{self.URL_GEO}/reverse?access_key={self.GEO_KEY}&query={geo_point}&limit=1"
+
+    response = requests.get(url)
+    data = json.loads(response.content)
+
+    if len(data['data']) > 0:
+      return data['data'][0]['county']
+    
+    return None

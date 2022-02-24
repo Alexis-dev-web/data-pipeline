@@ -3,7 +3,7 @@ from app.BaseModel import Alcaldia
 import json
 
 from tests.base_core import BaseCore 
-from unittest.mock import MagicMock, Mock, patch, call
+from unittest.mock import MagicMock, patch
 
 
 class TestAlcaldiaController(BaseCore):
@@ -18,7 +18,7 @@ class TestAlcaldiaController(BaseCore):
   def test_get_all_alaldias(self):
     test_alcaldia = self.builld_test_alcaldia(3)
 
-    p = patch('app.alcaldia.service.AlcaldiaService.AlcaldiaService.get_alcaldias_from_api_gob', MagicMock(return_value=[test_alcaldia]))
+    p = patch('app.providers.service.GobService.GobService.get_alcaldias_from_api_gob', MagicMock(return_value=[test_alcaldia]))
     p1 = patch('app.alcaldia.models.AlcaldiaRepository.AlcaldiaRepository.get_all', MagicMock(return_value=[]))
     p.start()
     p1.start()
