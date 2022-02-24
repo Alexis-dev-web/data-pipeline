@@ -66,9 +66,3 @@ The project is running on http://127.0.0.1:5000
         $ pip install pytest
         $ pytest -v
     ```
-2. Check code coverage:
-    ```shell
-        $ pip install coverage
-        $ coverage run -m pytest
-        $ coverage report
-    ```
